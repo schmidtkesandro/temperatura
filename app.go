@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"os"
 	"strconv"
 	"unicode"
@@ -57,7 +56,7 @@ func GetTemperature(w http.ResponseWriter, r *http.Request) {
 
 	// Fetch address information
 	address, err := getAddress(cep)
-	fmt.Println("err", err)
+
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "can not find zipcode")
@@ -110,13 +109,12 @@ func getTemperature(address Address) (float64, error) {
 	apiKey := config.WeatherAPIKey
 
 	// Escape a cidade para lidar com caracteres especiais
-	escapedCity := url.QueryEscape(address.Localidade)
-
+	//escapedCity := url.QueryEscape(address.Localidade)
+	escapedCity := "Brasília"
 	link := "http://api.weatherapi.com/v1/current.json?q=" + escapedCity + "&key=" + apiKey
 
-	fmt.Println(link)
-	resp, err := http.Get(link)
-	fmt.Println(err)
+	resp, _ := http.Get(link)
+	//fmt.Println(err)
 	fmt.Println(resp.StatusCode)
 	if resp.StatusCode != 200 {
 		link = "http://api.weatherapi.com/v1/current.json?q=" + removeAcentos(address.Localidade) + "&key=" + apiKey
@@ -131,8 +129,8 @@ func getTemperature(address Address) (float64, error) {
 
 	var weatherData map[string]interface{}
 	err = json.NewDecoder(resp.Body).Decode(&weatherData)
-	fmt.Println("err 1", err)
-	fmt.Println(resp.Body)
+	//fmt.Println("err 1", err)
+	//fmt.Println(resp.Body)
 
 	if err != nil {
 		return 0, err
